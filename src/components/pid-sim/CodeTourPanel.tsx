@@ -1,6 +1,7 @@
 import { aidLevel, aidTier } from '@/lib/pid-sim/guides/aidLevel';
 import type { CodeTourStep } from '@/lib/pid-sim/guides/codeTourSteps';
 import { unmetPrerequisites, type PrerequisiteState } from '@/lib/pid-sim/guides/prerequisites';
+import { withBase } from '@/lib/url';
 
 interface Props {
   stepIndex: number;
@@ -45,7 +46,7 @@ export default function CodeTourPanel({
           <ul className="pid-learn-more">
             {step.learnMore.map((link) => (
               <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
+                <a href={withBase(link.href)}>{link.label}</a>
               </li>
             ))}
           </ul>

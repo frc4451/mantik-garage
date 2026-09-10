@@ -1,5 +1,6 @@
 ---
 import { sections, appRoutes } from '@/config/navigation';
+import { withBase } from '@/lib/url';
 import ThemeToggle from '@/components/islands/ThemeToggle.astro';
 
 interface Props {
@@ -24,10 +25,10 @@ function isActive(path: string): boolean {
     </div>
     <div class="header-center">
       <nav class="header-navigation">
-        <a href="/" class:list={['header-nav-link', { active: isActive('/') }]}>Home</a>
+        <a href={withBase('/')} class:list={['header-nav-link', { active: isActive('/') }]}>Home</a>
         {sections.map((section) => (
           <a
-            href={section.path}
+            href={withBase(section.path)}
             class:list={['header-nav-link', { active: isActive(section.path) }]}
           >
             {section.label}
@@ -35,7 +36,7 @@ function isActive(path: string): boolean {
         ))}
         {appRoutes.map((route) => (
           <a
-            href={route.path}
+            href={withBase(route.path)}
             class:list={['header-nav-link', { active: isActive(route.path) }]}
           >
             {route.label}
@@ -67,10 +68,10 @@ function isActive(path: string): boolean {
     </div>
   </div>
   <nav class="mobile-section-nav" aria-label="Site sections">
-    <a href="/" class:list={['mobile-section-link', { active: isActive('/') }]}>Home</a>
+    <a href={withBase('/')} class:list={['mobile-section-link', { active: isActive('/') }]}>Home</a>
     {sections.map((section) => (
       <a
-        href={section.path}
+        href={withBase(section.path)}
         class:list={['mobile-section-link', { active: isActive(section.path) }]}
       >
         {section.label}
@@ -78,7 +79,7 @@ function isActive(path: string): boolean {
     ))}
     {appRoutes.map((route) => (
       <a
-        href={route.path}
+        href={withBase(route.path)}
         class:list={['mobile-section-link', { active: isActive(route.path) }]}
       >
         {route.label}

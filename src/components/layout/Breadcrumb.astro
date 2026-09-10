@@ -1,5 +1,6 @@
 ---
 import { sections, sectionFromPath } from '@/config/navigation';
+import { withBase } from '@/lib/url';
 
 interface Props {
   currentPath: string;
@@ -19,7 +20,7 @@ const sectionLabel = `${section.label} Training`;
 <nav class="breadcrumb-nav" aria-label="Breadcrumb">
   <ol class="breadcrumb-list">
     <li class="breadcrumb-item">
-      <a href="/">Home</a>
+      <a href={withBase('/')}>Home</a>
     </li>
     <li class="breadcrumb-item breadcrumb-current">
       <span>{sectionLabel}</span>

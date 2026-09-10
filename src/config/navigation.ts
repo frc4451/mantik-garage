@@ -32,7 +32,8 @@ export const siteConfig = {
   title: 'Mantik - FIRST Programming Made Easy',
   description:
     'Comprehensive programming documentation and interactive learning platform for FIRST Robotics students.',
-  url: 'https://mantik.netlify.app',
+  /** Deployment origin; set from `site` in astro.config.mjs. */
+  url: import.meta.env.SITE ?? 'https://frc4451.github.io',
   author: 'Abdullah Khaled',
   github: 'https://github.com/itkan-robotics/mantik',
   brand: {

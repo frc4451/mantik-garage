@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from '@/config/navigation';
+import { withBase } from '@/lib/url';
 
 interface Props {
   width?: number;
@@ -9,7 +10,7 @@ interface Props {
 ---
 
 <img
-  src={siteConfig.brand.iconLight}
+  src={withBase(siteConfig.brand.iconLight)}
   alt=""
   class:list={['brand-icon', 'brand-icon--light', Astro.props.class]}
   width={Astro.props.width ?? 28}
@@ -17,7 +18,7 @@ interface Props {
   decoding="async"
 />
 <img
-  src={siteConfig.brand.iconDark}
+  src={withBase(siteConfig.brand.iconDark)}
   alt=""
   class:list={['brand-icon', 'brand-icon--dark', Astro.props.class]}
   width={Astro.props.width ?? 28}

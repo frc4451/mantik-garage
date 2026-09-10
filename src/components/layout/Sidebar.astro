@@ -1,6 +1,7 @@
 ---
 import BrandIcon from '@/components/layout/BrandIcon.astro';
 import type { SidebarGroup } from '@/lib/content';
+import { withBase } from '@/lib/url';
 
 interface Props {
   currentPath: string;
@@ -25,7 +26,7 @@ function groupHasActiveLesson(group: SidebarGroup): boolean {
 >
   <div class="sidebar-container">
     <div class="sidebar-sticky">
-      <a class="sidebar-brand" href="/">
+      <a class="sidebar-brand" href={withBase('/')}>
         <BrandIcon class="sidebar-brand-logo" width={28} height={28} />
         <span class="sidebar-brand-text">Mantik</span>
       </a>
@@ -73,7 +74,7 @@ function groupHasActiveLesson(group: SidebarGroup): boolean {
                       {group.items.map((item) => (
                         <li class="child-tab">
                           <a
-                            href={item.href}
+                            href={withBase(item.href)}
                             class:list={['child-reference sidebar-link', { active: isLessonActive(item.href) }]}
                           >
                             {item.label}

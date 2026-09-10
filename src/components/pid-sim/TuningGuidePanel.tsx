@@ -2,6 +2,7 @@ import { aidLevel, aidTier } from '@/lib/pid-sim/guides/aidLevel';
 import type { TuningGuideStep } from '@/lib/pid-sim/guides/tuningGuideSteps';
 import { unmetPrerequisites, type PrerequisiteState } from '@/lib/pid-sim/guides/prerequisites';
 import type { MechanismType } from '@/lib/pid-sim/types';
+import { withBase } from '@/lib/url';
 
 interface Props {
   stepIndex: number;
@@ -47,7 +48,7 @@ export default function TuningGuidePanel({
           <ul className="pid-learn-more">
             {step.learnMore.map((link) => (
               <li key={link.href}>
-                <a href={link.href}>{link.label}</a>
+                <a href={withBase(link.href)}>{link.label}</a>
               </li>
             ))}
           </ul>
@@ -81,15 +82,15 @@ export default function TuningGuidePanel({
         )}
         {step.id === 'complete' && (
           <div className="pid-wizard-links">
-            <a href="/frc/pid-tuning-practice-setup">Full setup guide</a>
+            <a href={withBase('/frc/pid-tuning-practice-setup')}>Full setup guide</a>
             <a
-              href={
+              href={withBase(
                 mechanism === 'arm'
                   ? '/frc/pid-tuning-practice-arm'
                   : mechanism === 'flywheel'
                     ? '/frc/pid-tuning-practice-shooter'
-                    : '/frc/pid-tuning-practice-elevator'
-              }
+                    : '/frc/pid-tuning-practice-elevator',
+              )}
             >
               {mechanism === 'arm'
                 ? 'Arm tuning lesson'

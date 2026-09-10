@@ -5,11 +5,22 @@ import sitemap from '@astrojs/sitemap';
 import { fileURLToPath } from 'url';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { pagefindDevPlugin } from './scripts/pagefind-dev-plugin.mjs';
-import { netlifyFunctionsDevPlugin } from './scripts/netlify-functions-dev-plugin.mjs';
 import { normalizeWindowsDevPathsPlugin } from './scripts/normalize-windows-dev-paths.mjs';
+import { rehypeBasePath } from './scripts/rehype-base-path.mjs';
 
-const SITE = 'https://mantik.netlify.app';
+// Deployment target. Defaults to GitHub Pages for this fork
+// (https://frc4451.github.io/mantik-garage). Override with env vars to deploy
+// elsewhere, e.g. `SITE_URL=https://example.com BASE_PATH=/ npm run build`.
+const SITE = process.env.SITE_URL || 'https://frc4451.github.io';
+const BASE = normalizeBase(process.env.BASE_PATH || '/mantik-garage');
 const analyze = process.env.ANALYZE === '1';
+
+/** Leading slash, no trailing slash (except for the root base '/'). */
+function normalizeBase(value) {
+  const trimmed = value.trim().replace(/\/+$/, '');
+  if (!trimmed || trimmed === '/') return '/';
+  return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+}
 // Astro default 4321 falls in Windows excluded range 4239–4338 (Hyper-V/WSL) → EACCES on bind.
 const DEV_PORT = 5173;
 const DEV_HOST = '127.0.0.1';
@@ -17,8 +28,11 @@ const DEV_HOST = '127.0.0.1';
 export default defineConfig({
   devToolbar: { enabled: false },
   site: SITE,
+  base: BASE,
   output: 'static',
-  trailingSlash: 'never',
+  // GitHub Pages normalizes `/foo` -> `/foo/` for directory-style output, so let
+  // the host decide rather than enforcing a form Astro cannot redirect to.
+  trailingSlash: 'ignore',
   server: {
     port: DEV_PORT,
     host: DEV_HOST,
@@ -26,11 +40,12 @@ export default defineConfig({
   integrations: [
     mdx(),
     react(),
-    sitemap({
-      filter: (page) => !page.includes('/admin'),
-    }),
+    sitemap(),
   ],
   markdown: {
+    // Content links are authored site-root-relative (`/frc/...`); rewrite them
+    // for the deployed base path.
+    rehypePlugins: [[rehypeBasePath, { base: BASE }]],
     shikiConfig: {
       theme: 'github-light',
       themes: {
@@ -41,7 +56,7 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [normalizeWindowsDevPathsPlugin(), pagefindDevPlugin(), netlifyFunctionsDevPlugin()],
+    plugins: [normalizeWindowsDevPathsPlugin(), pagefindDevPlugin(BASE)],
     server: {
       host: DEV_HOST,
       port: DEV_PORT,

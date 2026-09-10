@@ -16,7 +16,7 @@ const MIME_TYPES = {
 };
 
 function resolvePagefindFile(urlPath) {
-  const rel = urlPath.replace(/^\/pagefind\//, '').split('?')[0];
+  const rel = urlPath.replace(/^.*\/pagefind\//, '').split('?')[0];
   if (!rel || rel.includes('..')) return null;
 
   const distFile = path.join(pagefindDist, rel);
@@ -28,13 +28,17 @@ function resolvePagefindFile(urlPath) {
   return null;
 }
 
-/** Serve Pagefind assets from dist/pagefind (or node_modules fallback) during astro dev. */
-export function pagefindDevPlugin() {
+/**
+ * Serve Pagefind assets from dist/pagefind (or node_modules fallback) during astro dev.
+ * `base` mirrors the `base` in astro.config.mjs so requests arrive as `/<base>/pagefind/...`.
+ */
+export function pagefindDevPlugin(base = '/') {
   return {
     name: 'pagefind-dev',
     configureServer(server) {
+      const prefix = `${base.replace(/\/+$/, '')}/pagefind/`;
       server.middlewares.use((req, res, next) => {
-        if (!req.url?.startsWith('/pagefind/')) return next();
+        if (!req.url?.startsWith(prefix)) return next();
 
         const filePath = resolvePagefindFile(req.url);
         if (!filePath) {

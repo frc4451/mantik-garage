@@ -1,8 +1,9 @@
 ---
+import { withBase } from '@/lib/url';
 ---
 
-<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-<script src="/pagefind/pagefind-ui.js" is:inline></script>
+<link href={withBase('/pagefind/pagefind-ui.css')} rel="stylesheet" />
+<script src={withBase('/pagefind/pagefind-ui.js')} is:inline></script>
 
 <div id="mantik-search-overlay" class="search-results-overlay" data-search-overlay aria-hidden="true" hidden>
   <div class="search-results-modal" data-search-modal>
@@ -14,6 +15,25 @@
 </div>
 
 <script>
+  import { withBase } from '@/lib/url';
+
+  interface PagefindResult {
+    url?: string;
+    sub_results?: { url?: string }[];
+  }
+
+  /**
+   * Pagefind indexes dist/, so its result URLs are site-root-relative and miss
+   * the base path the site is deployed under (e.g. GitHub Pages).
+   */
+  function addBaseToResultUrls(result: PagefindResult): PagefindResult {
+    if (result?.url) result.url = withBase(result.url);
+    for (const sub of result?.sub_results ?? []) {
+      if (sub?.url) sub.url = withBase(sub.url);
+    }
+    return result;
+  }
+
   function setSearchOverlayOpen(open: boolean) {
     const overlay = document.querySelector('[data-search-overlay]') as HTMLElement | null;
     if (!overlay) return;
@@ -82,6 +102,7 @@
         element: '#pagefind-search',
         showSubResults: true,
         resetStyles: false,
+        processResult: addBaseToResultUrls,
       });
     } catch {
       showUnavailable();

@@ -1,4 +1,5 @@
 ---
+import { withBaseHtml } from '@/lib/url';
 interface Props {
   title?: string;
   subtitle?: string;
@@ -19,7 +20,7 @@ const hasSlot = Astro.slots.has('default');
     <div class="rules-box-section">
       <h5 class="rules-box-good">Good Practices:</h5>
       <ul>
-        {goodPractices.map((item) => <li set:html={item} />)}
+        {goodPractices.map((item) => <li set:html={withBaseHtml(item)} />)}
       </ul>
     </div>
   )}
@@ -28,14 +29,14 @@ const hasSlot = Astro.slots.has('default');
     <div class="rules-box-section">
       <h5 class="rules-box-avoid">Avoid:</h5>
       <ul>
-        {avoid.map((item) => <li set:html={item} />)}
+        {avoid.map((item) => <li set:html={withBaseHtml(item)} />)}
       </ul>
     </div>
   )}
 
   {items.length > 0 && (
     <ul>
-      {items.map((item) => <li set:html={item} />)}
+      {items.map((item) => <li set:html={withBaseHtml(item)} />)}
     </ul>
   )}
 

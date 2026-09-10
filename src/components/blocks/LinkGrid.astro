@@ -1,4 +1,6 @@
 ---
+import { withBase } from '@/lib/url';
+
 interface Link {
   label: string;
   id?: string;
@@ -37,8 +39,9 @@ function resolveHref(link: Link): string {
 {title && <h3>{title}</h3>}
 <div class="link-grid">
   {links.map((link) => {
-    const href = resolveHref(link);
-    const isExternal = link.external || href.startsWith('http');
+    const resolved = resolveHref(link);
+    const isExternal = link.external || resolved.startsWith('http');
+    const href = isExternal ? resolved : withBase(resolved);
     const cardClass = ['link-grid-button', { 'under-construction': link.underConstruction }];
     const cardBody = (
       <>

@@ -176,12 +176,7 @@ Requires code changes in several places:
 - `src/content.config.ts` — new collection
 - `src/config/navigation.ts` — section registry
 - `src/lib/content.ts` — sidebar helpers if needed
-- `public/admin/config.yml` — Decap CMS collection
 - Homepage / LinkGrid links
-
-## Decap CMS
-
-On a deployed Netlify site with Identity + Git Gateway enabled, edit at `/admin`. CMS writes MDX files to the repo.
 
 ## Migration script warning
 
@@ -195,7 +190,7 @@ npm run migrate
 
 ```bash
 npm install
-npm run dev       # dev server at :4321
+npm run dev       # dev server at 127.0.0.1:5173/mantik-garage
 npm run build     # production build + Pagefind index
 npm run preview   # serve dist/ (search works here)
 ```
@@ -207,53 +202,20 @@ Curated external and internal links live in `src/data/resources.json` (validated
 | Task | How |
 |------|-----|
 | Bulk import from MDX LinkGrids | `npm run seed:resources` (reads FRC hub + FTC setup pages) |
-| Add one approved link | Edit `src/data/resources.json` after reviewing a submission issue |
+| Add one approved link | Edit `src/data/resources.json` |
 | Rich descriptions on regen | Edit `scripts/resource-description-overlays.json` (official URLs) — seed also pulls Mantik lesson intros |
 | Browse UI | `/resources` — React island in `src/components/resources/` |
 
-### Resource submission (Netlify)
+### Adding a resource
 
-Public submissions POST to `/.netlify/functions/submit-resource`, which verifies Google reCAPTCHA v2 and opens a GitHub Issue for review.
+The public submission form and its Netlify function were removed with the move
+to GitHub Pages, which hosts static files only. Add approved links by editing
+`src/data/resources.json` directly: give each entry a unique `id` slug, then run
+`npm run build` to validate against the Zod schema.
 
-#### Environment variables (Netlify → Site configuration → Environment variables)
-
-| Variable | Netlify **Secret**? | Exposed in browser? | When needed |
-|----------|---------------------|---------------------|-------------|
-| `PUBLIC_RECAPTCHA_SITE_KEY` | **No** | **Yes** (built into JS) | **Every build** — redeploy after change |
-| `RECAPTCHA_SECRET_KEY` | **Yes** | No | Function runtime (production) |
-| `GITHUB_TOKEN` | **Yes** | No | Function runtime |
-| `GITHUB_REPO` | No | No | Optional; defaults to `itkan-robotics/mantik` |
-| `ALLOW_RECAPTCHA_TEST_KEYS` | No | No | Optional legacy fallback when `RECAPTCHA_SECRET_KEY` unset |
-
-**Production:** register a **reCAPTCHA v2 Checkbox** site at [Google reCAPTCHA Admin](https://www.google.com/admin/recaptcha). Add domain `mantik.netlify.app`. Scopes: **All contexts** for `PUBLIC_*`; mark secrets **Secret**.
-
-**Deploy previews:** preview and branch deploy URLs (for example `deploy-preview-42--mantik.netlify.app`) automatically use Google test keys at runtime — no domain registration needed. Production keys apply only on `mantik.netlify.app`. To exercise real keys on a preview, add that preview hostname in Google reCAPTCHA Admin (not needed for routine PR review).
-
-#### Local development
-
-| Command | URL | Submit flow |
-|---------|-----|-------------|
-| `npm run dev` | `http://localhost:4321` | reCAPTCHA test key (hostname-based). Submit needs `dev:netlify`. |
-| `npm run dev:netlify` | `http://localhost:8888` | Full flow: reCAPTCHA test key + function + GitHub issue |
-
-1. Copy `.env.example` → `.env` (gitignored).
-2. Set `GITHUB_TOKEN` (Issues write on the repo).
-3. Optional: real reCAPTCHA keys in `.env`; local and preview hosts still use Google test keys automatically.
-
-Google reCAPTCHA test keys (local / preview fallback): site `6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`, secret `6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe`. See [Google reCAPTCHA FAQ — automated tests](https://developers.google.com/recaptcha/docs/faq#id-like-to-run-automated-tests-with-recaptcha.-what-should-i-do).
-
-Create GitHub labels on `itkan-robotics/mantik` (or the function retries without labels if a label is missing):
-
-| Label | Purpose |
-|-------|---------|
-| `resource-submission` | All public catalog submissions |
-| `needs-review` | Awaiting maintainer review |
-| `source-frc-aides` | Submitted from FRC Aides (aakhaled.com / akhaled247.github.io) |
-| `source-mantik` | Submitted from mantik.netlify.app |
-
-Issues include **Submitted from** and **Page URL** (from the browser `Origin` / `Referer` headers) so you can tell which site the submitter used.
-
-After approval, add an entry to `resources.json` with a unique `id` slug, then run `npm run build` to validate. Pushing catalog changes to `main` syncs the file to [akhaled247/frc-aides](https://github.com/akhaled247/frc-aides) via GitHub Actions (see below).
+Pushing catalog changes to `main` syncs the file to
+[akhaled247/frc-aides](https://github.com/akhaled247/frc-aides) via GitHub
+Actions (see below).
 
 ### FRC Aides catalog sync
 

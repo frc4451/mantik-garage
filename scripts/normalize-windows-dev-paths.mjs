@@ -1,4 +1,4 @@
-/** Netlify dev on Windows proxies index paths with backslashes (e.g. /resources\\index). */
+/** Some Windows dev proxies request index paths with backslashes (e.g. /resources\\index). */
 export function normalizeWindowsDevPathsPlugin() {
   return {
     name: 'normalize-windows-dev-paths',
